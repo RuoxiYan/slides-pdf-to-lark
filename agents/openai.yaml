@@ -1,0 +1,6 @@
+interface:
+  display_name: "课件转录到飞书"
+  short_description: "逐页转录课件到飞书，保留列表缩进层级、公式、代码与原图对应"
+  default_prompt: "使用 $lark-transcribe-slides 将这份课件转录到我指定的飞书文档，保留每张幻灯片的缩进层级。"
+policy:
+  allow_implicit_invocation: true
