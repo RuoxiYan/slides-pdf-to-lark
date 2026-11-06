@@ -69,12 +69,12 @@ python scripts/extract_slide_figures.py /path/to/lecture.pdf --out work/sample -
 | 输出 | 内容 |
 | --- | --- |
 | `review.html` | 候选图及其页内位置预览 |
-| `manifest.json` | 页码、区域坐标、附近文字与源文件校验值 |
+| `manifest.json` | 页码、区域坐标、附近文字、逐张幻灯片文本/图像清单与源文件校验值 |
 | `assets/xref-*` | 原生位图，透明蒙版合成为PNG |
 | `assets/p*-f*.png` | 图表区域渲染，保留文字与矢量线条 |
 | `page-*-locations.png` | 候选区域的位置标注图 |
 
-检查预览后，可通过`--regions`手动指定幻灯片及图表边界，格式见[图片提取说明](references/figure-extraction.md)。
+先检查`slide_inventory`中`textless: true`的幻灯片：它们可能是纯图、截图或没有文本层的表格，不能仅凭文字转录结果跳过。检查预览后，可通过`--regions`手动指定幻灯片及图表边界，格式见[图片提取说明](references/figure-extraction.md)。
 
 ## 适用范围与限制
 

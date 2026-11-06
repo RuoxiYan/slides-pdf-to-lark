@@ -54,6 +54,21 @@ class ExtractorTests(unittest.TestCase):
         self.assertTrue((out/'review.html').is_file())
         self.assertNotEqual(self.run_cli('--out',out).returncode, 0)
 
+    def test_textless_slide_inventory(self):
+        config = self.root/'slide-regions.json'
+        config.write_text(json.dumps({'slides':[
+            {'page':1,'bbox':[0,0,200,200]},
+            {'page':1,'bbox':[200,0,400,200]}]}))
+        out = self.root/'inventory'
+        result = self.run_cli('--out',out,'--regions',config)
+        self.assertEqual(result.returncode,0,result.stderr)
+        slides = json.loads((out/'manifest.json').read_text())['pages'][0]['slide_inventory']
+        self.assertEqual(len(slides),2)
+        self.assertFalse(slides[0]['textless'])
+        self.assertTrue(slides[1]['textless'])
+        self.assertTrue(slides[1]['requires_review'])
+        self.assertGreaterEqual(slides[1]['figure_candidates'],1)
+
     def test_explicit_region_and_metadata(self):
         config = self.root/'regions.json'
         config.write_text(json.dumps({'figures':[{'page':1,'bbox':[40,70,160,150],'after_text':'Example paragraph'}]}))

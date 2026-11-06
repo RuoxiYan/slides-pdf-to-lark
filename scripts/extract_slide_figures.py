@@ -139,6 +139,16 @@ def main():
             manifest['figures'].append(figure)
             apage.draw_rect(r,color=(1,0,0),width=1);apage.insert_text((r.x0,max(10,r.y0-2)),str(index),fontsize=9,color=(1,0,0))
             gallery.append(f'<article><h3>{ident} · slide position {c["slide_position"]}</h3><img src="{crop}"><p>原生图片对象：{len(raw)}；待核验</p></article>')
+        slide_inventory=[]
+        for si,sr in enumerate(slides,1):
+            content_texts=[t for t in texts if sr.contains(fitz.Rect(t['bbox']))
+                and fitz.Rect(t['bbox']).y0>=sr.y0+sr.height*.13
+                and '单击此处编辑母版' not in t['text'] and 'Page.' not in t['text']]
+            figure_count=sum(c['slide_position']==si for c in candidates)
+            slide_inventory.append({'position':si,'bbox':box(sr),'text_blocks':len(content_texts),
+                'figure_candidates':figure_count,'textless':not content_texts,
+                'requires_review':not content_texts})
+        record['slide_inventory']=slide_inventory
         preview=f'page-{n:03}-locations.png';apage.get_pixmap(dpi=100,alpha=False).save(args.out/preview);annotated.close()
         record['preview']=preview
         print(f'page {n}: {len(slides)} slide regions; {len(images)} image occurrences; {len(candidates)} figure candidates',flush=True)
