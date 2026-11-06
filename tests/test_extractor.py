@@ -50,6 +50,8 @@ class ExtractorTests(unittest.TestCase):
         self.assertTrue(any(not f['native_images'] for f in data['figures']))
         for f in data['figures']:
             self.assertTrue((out/f['crop']).is_file())
+            self.assertEqual(f['crop_dpi'], 600)
+            self.assertGreater(f['crop_pixels'][0], 500)
             self.assertEqual(f['review_status'], 'pending')
         self.assertTrue((out/'review.html').is_file())
         self.assertNotEqual(self.run_cli('--out',out).returncode, 0)

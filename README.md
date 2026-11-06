@@ -76,6 +76,8 @@ python scripts/extract_slide_figures.py /path/to/lecture.pdf --out work/sample -
 
 先检查`slide_inventory`中`textless: true`的幻灯片：它们可能是纯图、截图或没有文本层的表格，不能仅凭文字转录结果跳过。检查预览后，可通过`--regions`手动指定幻灯片及图表边界，格式见[图片提取说明](references/figure-extraction.md)。
 
+图片优先使用完整的`assets/xref-*`原生文件；包含叠加文字或矢量图形时，使用默认600 DPI的`assets/p*-f*.png`局部渲染。上传前按`manifest.json`中的`crop_pixels`检查尺寸，并在飞书显示宽度下核对小字和细线。源PDF本身低分辨率时，提高渲染DPI不会产生新的细节。
+
 ## 适用范围与限制
 
 - 图片提取基于PDF对象和几何规则，装饰或公式可能被选为候选图。多幻灯片分区优先识别白底横向矩形；非白底、旋转页和密集图文需核对或手动指定边界。

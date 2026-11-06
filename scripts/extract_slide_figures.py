@@ -57,7 +57,8 @@ def main():
     ap.add_argument('pdf',type=Path); ap.add_argument('--out',required=True,type=Path)
     ap.add_argument('--pages',help='1-based comma-separated pages, default all')
     ap.add_argument('--regions',type=Path,help='JSON: slides and/or figures, each with page, bbox in unrotated PDF points; optional title/after_text')
-    ap.add_argument('--dpi',type=int,default=220)
+    ap.add_argument('--dpi',type=int,default=600,
+                    help='composite crop resolution (default: 600); native assets retain original pixels')
     args=ap.parse_args()
     if not 72<=args.dpi<=600: ap.error('dpi must be 72..600')
     if args.out.exists(): ap.error('output directory already exists; use a new directory')
@@ -132,9 +133,12 @@ def main():
                     except Exception as exc:
                         warnings.append(f'native extraction failed for {xref}: {type(exc).__name__}');continue
                 raw.append({'xref':xref,'file':cache[xref],'bbox':box(ib)})
-            crop=f'assets/{ident}.png';p.get_pixmap(clip=r,dpi=args.dpi,alpha=False).save(args.out/crop)
+            crop=f'assets/{ident}.png';crop_pix=p.get_pixmap(clip=r,dpi=args.dpi,alpha=False)
+            crop_pix.save(args.out/crop)
             nearby=sorted(texts,key=lambda t:abs(fitz.Rect(t['bbox']).y1-r.y0)+abs(fitz.Rect(t['bbox']).x0-r.x0)*.2)[:3]
-            figure={'id':ident,'page':n,**c,'bbox':box(r),'crop':crop,'native_images':raw,
+            figure={'id':ident,'page':n,**c,'bbox':box(r),'crop':crop,
+                    'crop_dpi':args.dpi,'crop_pixels':[crop_pix.width,crop_pix.height],
+                    'native_images':raw,
                     'nearby_text':nearby,'warnings':warnings,'review_status':'pending'}
             manifest['figures'].append(figure)
             apage.draw_rect(r,color=(1,0,0),width=1);apage.insert_text((r.x0,max(10,r.y0-2)),str(index),fontsize=9,color=(1,0,0))
